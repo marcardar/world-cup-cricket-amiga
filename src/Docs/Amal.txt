@@ -1,0 +1,363 @@
+*******************************************************************************
+*********                                                            **********
+*********              W O R L D   C U P   C R I C K E T             **********
+*********                                                            **********
+*********                         An M.C. Production  (14/01/1997)   **********
+*********                                                            **********
+*********         AMAL Variables and Programs                        **********
+*********                                                            **********
+*******************************************************************************
+********************   A M A L   I N F O R M A T I O N   **********************
+*******************************************************************************
+
+***************************  Global Variables  ********************************
+RA  0	- Current mode of action
+	LIMITS	-	 0 - initialising
+			 1 - bowler running up
+			 2 - NOT USED
+			 3 - ball on its way to batsman
+			 4 - striker in process of playing shot
+			 5 - ball just leaving striker
+			 6 - ball on its way to fielders
+			 7 - fielder collecting ball
+			 8 - fielder ready to return ball
+			 9 - fielder preparing to release return
+			10 - NOT USED
+			11 - NOT USED
+			12 - NOT USED
+			13 - NOT USED
+			14 - ball on its way towards stumps
+			15 - ball gone for overthrows
+
+		     >=100 - outcome of ball decided
+		       100 - usual outcome (no dismissal, maybe runs)
+		       101 - no ball
+		       102 - wide
+		      >200 - dismissal of type HOW_OUT=Amreg(0)-200
+		      		(see HOW_OUT())
+	Note - this is not varied in AMAL
+RB  1	- Test for whether ball has bounced since the ball was hit by batsman
+	LIMITS	- 	True or False
+RC  2	- Count used to find out whether all players have stopped moving in
+	program 26. When player stops he adds his player no. (1-13) to total
+RD  3	- What controls the batting side
+	LIMITS	-	-1 - Computer
+			 0 - User (using joystick 0)
+			 1 - User (using joystick 1)
+RE  4	- What controls the fielding side
+	LIMITS	-	(See RD)
+RF  5	- Fielder who gathers ball
+	LIMITS	-	0	- Not gathered yet
+		        1 to 11	- Fielder number who tried to gather ball
+RG  6	- Bowler image for when a fielder greets bowler during assemble
+	LIMITS	-	200,210,...,260,270
+RH  7	- Whether ball is being held by someone.
+	- This stops AMAL showing and moving the ball (AMAL sets RW=RU=0)
+	- When fielder wants to release ball (from AMAL) he must set RH=-2
+	  and then AMOS will set RH=0 (this is so AMOS can control position
+	  of ball when it is first reshown)
+	LIMITS	-	 0 - Ball is not being held (shown and free to move)
+			-1 - Ball is being held (hidden not free to move)
+			-2 - Ball is about to be released (hidden, not move)
+RI  8	- Whether bowler bowls over the wicket (wrt right handed bowler)
+	LIMITS	-	True or False
+RJ  9	- True <=> Umpire just given signal.
+	Umpire waits 1 second after Amreg(0) becomes >99, and
+	then RJ set to true (this is also when and signal is given)
+RK 10	- Which stumps were last broKen
+	OR if run out has occured then which stumps were involved
+	LIMITS -	0 - No stumps broken
+			1 - Keepers end
+			2 - Bowlers end
+RL 11	- True <=> An umpire has given signal (if necessary) to show
+		   that the ball is now dead (ie RA>99)
+	Note -  When RA first goes above 99, one umpire is told to do
+		appropriate signal and as soon as he starts it he sets
+		RL=True. If no signal to be shown then RL is set
+		straight away.
+	This is so that fielders and batsmen can react to what appears
+	to be an umpires decision (and not the "secret" result given by
+	RA)
+	Note - See R6 for each umpire for the event 
+RM 12	-
+RN 13	-
+RO 14	- Information on whether a batsman has been given out
+	- Equal to "MAN_OUT"
+	LIMITS	-	0 - no man out
+			1 - striker out
+			2 - non-striker out
+RP 15	- Whether batsmen have crossed in the current/last run
+	LIMITS	-	True or False
+RQ 16	- Number of runs that will have been run (by striker) once
+	  current run has been completed
+	LIMITS -	>=0
+RR 17	- Runs scored in boundaries alone
+RS 18	- x component of direction of ball. ie 256*cosine(BALL_ANGLE#)
+	LIMITS	-	-256 to 256
+RT 19	- y component of direction of ball. ie 256*sine(BALL_ANGLE#)
+	LIMITS - 	-256 to 256
+RU 20	- Horizontal velocity of ball is "RU/8 pts per AMAL step"
+	- Note, currently 25  AMAL steps per second
+	LIMITS -	0 to 511
+RV 21	- Seam/Spin applied to ball
+	- When ball bounces this value will be added to RC
+	LIMITS -	none (although realistically -200 to 200)
+		<0	- Deviates to the left
+		>0	- Deviates to the right
+RW 22	- Vertical velocity of ball is "RW pts per AMAL step"
+	LIMITS -	-63 to 63
+RX 23	- X coordinate of ball (in pts)
+	- One pixel corresponds to 8 pts
+	LIMITS -	none
+RY 24	- Y coordinate of ball (in pts)
+	- One pixel corresponds to 8 pts
+	LIMITS -	none
+RZ 25	- Z coordinate of ball (in pts)
+	- One pixel corresponds to 8 pts
+	LIMITS -	>=0
+
+NOTE	-	One pixel corresponds to about 15cm
+
+***************************   AMAL Programs   *********************************
+
+Program 0	- Scrolling
+---------------------------
+R0	- Used to prevent autotest from Directing certain procedures
+	LIMITS -	 0 -	Allow all procedures to be run from autotest
+			-1 -	Ball has gone further than possible for the
+				scrolling to follow in the centre of screen.
+				So, instead of scrolling in normal fashion
+				where Move command is updated every frame,
+				complete scroll to the boundary (ie complete
+				Move command in its entirity by stopping
+				autotest from interupting).
+R1	- New X coordinate for screen offset
+	LIMITS -	0 to 320
+R2	- New Y coordinate for screen offset
+	LIMITS -	0 to 374
+R3	- Not used in program but may vary because of references to
+	Amreg(MAN,3) in the "_GET_MAN_ANGLE/IMAGE[M,N,MAN]" BASIC procedures
+R8	- X_OFFSET
+R9	- Y_OFFSET
+
+
+Program 1	- Fielders
+--------------------------
+R0	- Mode currently in action (0-10) (see R9)
+	except	R0=-1 => Fielder in process of bowling ball (only for 11)
+		R0=-2 => Fielder has just finished bowling sequence (only 11)
+R1	- Fielder rating (_FIELDING+FITNESS+1)/2 (0 to 20)
+	NOTE -	This is changed at the begining of the program so that R1
+		varies from 6 to 11 (in the opposite direction)
+R2	- Number of fielder (1 to 11)
+R3	- Base image for animation
+R4	- Last mode in action (the one before the current R0)
+	LIMITS - (See R9)
+R5	- If R0=1 then this is the number of frames before current movement is
+	  completed
+	  Not applicable for R0<>1
+R6	- X component of total movement to destination (in pixels)
+R7	- Y component of total movement to destination (in pixels)
+R8	- distance from destination (in pixels)
+R9	- Mode of action to be taken (reset to zero once recognised)
+	LIMITS -	 0 - Do nothing new
+			 1 - Run to destination
+			 2 - Stop (moving and animating)
+			 3 - Attempt to grab ball (in standing position)
+			 4 - Attempt to grab ball (by diving)
+			 5 - Perform a throw to stumps
+			 6 - Run with ball to stumps
+			 7 - Tidyup
+				if dismissal then
+					if caught then
+						make catcher throw ball upwards
+					all fielders run to bowler
+				all fielders run back to initial positions
+			 8 - Bowl ball (only 11)
+			 9 - Standup (after diving or grabing ball)
+			10 - Query/Appeal for a dismissal (by raising arms)
+
+
+Program 12	- Striker
+-------------------------------------------------
+This is split into 2 parts:
+[1. Before Autotest initiated - ie up to striker hitting ball]
+R0	- Fitness rating
+R1,R2	- See Program 20 (Selection for pitch of delivery)
+R4	- True <=> left handed
+R6	- Temporary register (used to hold a test)
+R8	- Type of shot played/attempted (
+	(Note - angles in brackets are limits to strike angle if cleanly hit)
+	LIMITS -	 0 - No shot played (yet?)	(BOWL_ANGLE#)
+			 1 - Forward defensive		( 0	to  8Pi/8)
+			 2 - Backward defensive		( 8Pi/8	to 16Pi/8)
+			 3 - pull			( 0	to  2Pi/8)
+			 4 - on-drive			( 2Pi/8	to  4Pi/8)
+			 5 - off-drive			( 4Pi/8	to  6Pi/8)
+			 6 - cover drive		( 5Pi/8	to  7Pi/8)
+			 7 - square cut			( 7Pi/8 to  9Pi/8)
+			 8 - late cut			( 9Pi/8	to 11Pi/8)
+			 9 - leg glance			(12Pi/8	to 14Pi/8)
+			10 - sweep			(14Pi/8	to 16Pi/8)
+			11 - hook			(14Pi/8	to 16Pi/8)
+			 ? - edge (not an actual shot)	(11Pi/8	to 13Pi/8)
+R9	- If user then equal to J0 or J1
+
+[2. After Autotest initiated - ie after striker has hit the ball]
+R0	- Current mode of runner
+	LIMITS -	 0 - Currently standing in crease
+			 1 - Out of crease
+			 2 - Running to correct crease (during tidyup)			  
+			-1 - Walking off pitch (usually after dismissed)
+R1	- Fitness (for running speed) calculated from R0 in first part
+	LIMITS -	0 to 20
+		NOTE -	This is changed at the begining of the program so that
+			it varies from 12 to 20 in the opposite direction
+R2	- Stumps to which runner is currently running (if R0=-1)
+	  Stumps at which runner is currently standing (if R0=0)
+	LIMITS -	1 - keeper stumps
+			2 - bowler stumps
+			0 - runner is standing out of crease - better move!
+R3	- Base image for animation
+R4	- Complete runs made so far
+R5	- Stumps to which runner should be running in order to make the RQ
+	  number of runs
+	LIMITS -	1 - keeper stumps
+			2 - bowler stumps
+R6	-  (i) Temporary register (y distance to crease before turning)
+	  (ii) Set to equal 1000 as soon as runner reaches crease (whether
+	  going for a new run or returning to old crease)
+	  This is used to tell AMOS when it needs to work out whether to go
+	  for another run (in _AUTO_STRIKER_RUNNING) and as soon as AMOS
+	  recognizes this, the register is reset to zero
+R7	- Number of frames before runner reaches crease (needed for grounding)
+	  Note - this is set to -99 at the start (coz hes been in the crease
+		 for a long time - ie make sure hes not close to being runout)
+R8	- Temporary register
+R9	- If user is batting then equal to J0 or J1
+	  If computer batting then equal to (NOT DECIDED YET)
+
+Labels not used - E,N,S,V,X
+
+
+Program 13	- Non-Striker
+-----------------------------------------------------
+Same as Program 12 (Striker) [After Autotest initiated]
+	EXCEPT R9 IS NOT USED
+	AND R0 used as in [Before Autotest initiated]
+
+
+Program 14	- Stumps (batsman's end)
+----------------------------------------
+R0	- True <=> stumps have been broken
+	LIMITS -	True or False
+
+
+Program 16	- Umpire (main)
+---------------------------------------
+R0	- Current mode
+	LIMITS -	-2 - Running to position to study run out
+			-1 - Just run back to position behind stumps
+			 0 - Nothing
+			>0 - Show a signal (if necessary)
+				If R0<100
+					Umpire waits a bit (deciding) facing
+					the appropriate direction and then
+					shakes his head. The type of dismissal
+					that he must answer is R0
+					(eg reject appeal for run out is R0=2)
+				Else (If R0>=100)
+					Here R0=RA
+					If decision to make (ie lbw or runout)
+						first wait a bit (looking
+						in appropriate direction)
+						before showing signal
+					End If
+					As soon as starts to show signal RL is
+					set to True
+					After signal finished then Mode 2 is
+					invoked (running back to position)
+				End If
+R1	- Side which umpire is now at (even if just slightly)
+	  Note - use R7 to see if umpire has reached "runout" position
+	LIMITS -	-1 - left hand side (ball moved right and running)
+			 0 - umpire is in original position behind stumps
+			 1 - right hand side (ball moved left and running)
+R2	- number of frames to wait for a decision (only app. if R9=202 or 204)
+	LIMITS -	 0 to 30
+R3	- Base image for umpire in standing position when at the side
+	  indicated by R1
+	  Note - updated when R1 changes
+	LIMITS -	Equal to 5*R1+55
+R4	- Temporary register
+R6	- Used for telling Amos when (and if) to play the "Aahh" sample when
+	  he shakes his head.
+	  Set to True when umpire starts to shake his head. Amos should then
+	  set this back to False as soon as it recognizes it. When head stops
+	  shaking, this AMAL prog resets R6 anyway.
+R7	- True <=> umpire has reached his position to study run out
+R8	- True <=> umpire has finished his job for the ball
+	  (ie hes given any signal and is back in normal position)
+R9	- Mode of action to be taken by umpire. As soon as this is
+	  acknowledged, it is reset to zero
+	LIMITS - 	(See R0)
+
+
+Program 17	- Square Leg Umpire
+---------------------------------------------------
+R0	- Current mode of action (see R9)
+R3	- Base image for umpire
+R6	- (See R6 - Program 16 - Umpire (Main)
+R7	- Time since umpire was given a signal to make a decision
+	  Once this reaches 20 the umpire makes a decision
+	  (Note- this is just a way to pause umpire for a bit without
+	  	 using the Move 0,0,20 command)
+R9	- Mode of action to be taken
+	LIMITS	-  <100 - shake head
+		   >200 - raise finger (dismiss) and set RL=-1
+		   o/w  - just set RL=-1 (this should not occur!)
+
+
+Program 18	- Ball (and ball movement)
+------------------------------------------
+R1	- Type of ball movement
+	LIMITS	 -1 - Swing
+		  0 - Normal
+		  1 - Spin/Seam
+
+
+Program 19	- Shadow
+------------------------
+No registers used
+
+
+Program 20	- Selection for pitch of delivery
+-------------------------------------------------
+R1	- X distance for cross to move
+	LIMITS -	-1 to 1
+R2	- Y distance for cross to move
+	LIMITS -	-1 to 1
+R5	- x coordinate of where to aim pitch (when computer fielding only)
+R6	- y coordinate of where to aim pitch (when computer fielding only)
+R9	- If user is fielding then R9 equal to J0 or J1
+	This is not kept constant
+
+Program 25	- Scroll field to a position
+--------------------------------------------
+R1	- x coordinate to move to
+R2	- y coordinate to move to
+
+
+Program 26	- Move Man to a position
+----------------------------------------
+(Mainly used to bring fielders or batsman on to the field
+R0	- Speed rating - normally (FITNESS()+_FIELDING()+1)/2, else 15
+R1	- Function of R0 used to get how quickly man moves to dest.
+R2	- Object number (ie fielder number or 12/13 if batsman)
+R3	- Base image for movement - stays constant
+R4	- Image to be assigned once the movement is complete
+R5	- Time to wait before movement is started
+R6	- x distance to move
+R7	- y distance to move
+R8	- distance to move
+

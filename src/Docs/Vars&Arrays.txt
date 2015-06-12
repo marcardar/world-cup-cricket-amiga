@@ -1,0 +1,1191 @@
+*******************************************************************************
+*********                                                            **********
+*********              W O R L D   C U P   C R I C K E T             **********
+*********                                                            **********
+*********                         An M.C. Production  (14/01/1997)   **********
+*********                                                            **********
+*********         Global Variables and Arrays                        **********
+*********                                                            **********
+*******************************************************************************
+**********************  G L O B A L   V A R I A B L E S  **********************
+*******************************************************************************
+BACKUP		Which fielders have been designated to back up a return
+		Note - backup fielders satisfy Btst(MAN,CHASER)=False
+	LIMITS	Binary word (bits 1 to 11)
+		Bit true <=> fielder has been assigned to backup
+				(used in conjunction with BACKUP(2)
+
+BACKED_UP	True <=> backup fielder has gathered a return from a fielder
+		Reset to false during PLAY_INITIALISE
+		**** NOT USED YET - BUT IT IS WORKING ****
+
+BALL		Number of balls bowled so far in over
+	LIMITS	0 to 6
+
+_BOBS		Number of bobs saved in bank when program is run
+		All temporary bobs put in images _BOBS+1 and _BOBS+2
+
+BOUNCED		Identical to Amreg(1)
+		Updated after every Synchro during _SYNC
+		True <=> ball has bounced (Set to false when ball hit)
+		Note -	if change BOUNCED from within AMOS then MUST change
+			the Amreg(1) register too (ie Amreg(1)=BOUNCED)
+
+BOWL_ANGLE#	Angle with which ball leaves bowler's hand
+
+BOWLER		Player number currently bowling
+	LIMITS	- 0	  - No bowler chosen
+		  1 to 11 - Player number in team
+
+BOWLER_HAND	Whether current bowler is right or left handed
+	LIMITS	See BAT_HAND(9)
+
+BOWLER_NAME$	Short name of current bowler
+
+BOWLER_QUALITY	Quality of current bowler. Depends on skill, form and fitness
+	LIMITS	0 to 100
+
+BOWLER_SIDE	Whether current bowler will bowl round or over the wicket
+	LIMITS	 0 - Pass stumps on the l.h side (Over the wicket)
+		-1 - Pass stumps on the r.h side (Round the wicket)
+			(with respect to a right handed bowler)
+
+BOWLER_SPEED	Speed of current bowler
+	LIMITS	See BOWL_SPEED(16,9)
+
+BOWLER_TYPE	Type of movement for rest of over by current bowler
+	LIMITS	0 - Away swing/flighted leg break
+		1 - Straight delivery/flighted delivery
+		2 - In Swing/flighted off break
+		3 - Away seam/leg break
+		4 - Straight back spin/straight delivery
+		5 - In seam/Off break
+
+_BOXES		Number of boxes to be placed on "Other Results" page
+	LIMITS	1 to 3
+
+CATCHER		Which fielders have a chance of catching the ball
+		These are the fielders within a small angle of the HIT_ANGLE#
+		and the fielder who is nominated to run to catch the ball
+	LIMITS	Binary word (bits 1 to 11)
+		Bit True <=> fielder is a catcher
+
+CH		Users Team (1-9)
+
+CHASER		Which fielders have been designated to chase ball
+	LIMITS	Binary word (bits 1 to 11)
+		Bit true <=> fielder has been assigned to chase
+				(used in conjunction with CHASER(3)
+
+_CLOSEST_MAN	Which fielder is closest to the ball - either a chaser
+		or a catcher or both
+	LIMITS	Fielder number (1-11)
+
+_COMPILED	True <=> Program is in compiled format
+
+DELIVERY_QUALITY	Quality of delivery calculated when bowler starts his
+		run-up. Depends on BOWLER_QUALITY, risk and randomness
+	LIMITS	0 to 100
+
+DELIVERY_SPEED	Speed of delivery. This is the value taken by HSPEED when
+		bowler releases ball.  Depends on BOWLER_SPEED & type of ball
+	LIMITS	220 to 460
+
+DELIVERY_TURN	Turn (degree of spin/swing or seam) of delivery. Depends on
+		DELIVERY_SPEED, DELIVERY_QUALITY, randomness
+	LIMITS	-100 to 100
+		< 0 - Deviation to the left
+		= 0 - No deviation
+		> 0 - Deviation to the right
+
+DELIVERY_TYPE	Type of ball bowler has bowled (dependant on strikers hand)
+		eg in-swing to right hander is equiv to out-swing to a lefty
+	LIMITS	Same format as BATTING()
+
+DETAILS_POS	Position for next box to be drawn on "Other Results" page
+	LIMITS	1 to _BOXES
+
+DPAINT		Font - Dpaint 5
+
+END_OF_INNINGS	Whether the innings has been comleted or not
+		(Updated in BALL_TERMINATE)
+	LIMITS	True of False
+
+END_OF_OVER	Whether over has been completed or not
+		(Updated in BALL_TERMINATE)
+	LIMITS	True or False
+
+END_OF_BALL	This is set to True as soon as Arcade section wants to
+		transfer control back to panel.  This will be some moment
+		after _MODE>99
+
+ESCAPED		True <=> User has nominated to escape out of the current game
+
+EXTRAS		True <=> Runs as stated in SCORE variable are extras
+
+_FIELD		Field number of current field
+	LIMITS	1 to 15 (1 to 5 are default fields)
+
+_FIXTFONT	Font - Ruby 12
+
+FRAME		Frame number of animation during the playing of a ball
+		(Reset to zero when there is a change of mode)
+
+FRAME_OVERTHROW	Frame number when it is EXPECTED that backup fielder
+		will have missed return.
+		ie.	If in BALL_TO_STUMPS mode and FRAME>FRAME_OVERTHROW
+			Then backup fielder has missed return (we think!)
+		This is calculated during RETURN_RELEASED
+		No more runs can be started after FRAME_OVERTHROW
+
+GATHERED	True <=> Fielders have gathered or are gathering. Usually
+		just after a dismissal or after they take the field. This is
+		reset to false as soon as the fielders are moved elsewhere
+
+HALFWAY		True if and only if fininshed league stage and not started
+		knockout stage
+		If there is no league stage or no knockout stage then HALFWAY
+		will always be false
+	LIMITS	True or False
+
+HIT_ANGLE#	Angle at which ball was hit
+	LIMITS	0 to 2Pi
+
+HOSTS		Country where current tournament is being played
+	LIMITS	1 to 5
+
+HSPEED		Current horizontal speed of ball is "HSPEED/8 pts per frame"
+		This is set equal to Amreg(20) directly after synchro and may
+		be modified in AMOS before the next synchro
+	LIMITS	0 to 511
+
+INNS		Innings
+	LIMITS	- 0 - First Innings
+		  1 - Reply
+
+_INTFINISH	Equals PARTITION(Tournnumber+1,Year)-1
+		Where Tournnumber is 1,2 or 3 (3 tournament positions per year)
+	LIMITS	1 to 10
+
+_INTSTART	Equals PARTITION(Tournnumber,Year)
+		See _INTFINISH
+
+KEEPER		Player number (1-11) for keeper in current fielding team
+
+LARGE		Font - News 23		Used in titles for pages
+
+LASTCOUNTRY	The last country that the user visited as shown on world map
+	LIMITS	1 to 9
+
+MAN_OUT		Which bastman has been given out
+	LIMITS	0 - No one given out
+		1 - Striker out
+		2 - Non-striker out
+
+_MATCH		Number of current match
+		 0 to 28	- League match
+		29 to 30	- Semis
+		31		- Final
+
+_MAX_OVERS	Maximum number of overs any bowler can bowl
+		Equal to (OVERS+4)/5
+		(If OVERS is a multiple of 5, then equal to OVERS/5)
+
+_MAX_RUN	Maximum number of runs the batsmen (ie striker) ever tried to
+		run. So, if the striker sets off for a run and then changes his
+		mind and goes back to his crease, then _MAX_RUN is 1 and RQ is
+		0. The purpose of this is that when there is a run out, the
+		number of completed runs is "_MAX_RUN-1". Think about it! This
+		could be negative but shouldnt be! _MAX_RUN is defaulted to 0
+		at the start of exh delivery. It is updated in _PLAY procedure.
+		I guess it is possible that this could lead to an extra run
+		being accounted for (eg if a batsman just fails to make his
+		ground but goes off for another run while umpire makes decision
+		- although I dont think this is possible anyway....)
+		This method of finding completed runs should be good enough!
+	LIMITS	>=0
+
+MEDIUM		Font - Mfast 20
+
+MESSAGEFONT	Font - Pearl 8	Used for displaying messages in message bar
+
+_MODE		Current mode of play (equal to amreg(0) which is not varied
+		during AMAL)
+	LIMITS	(See Amreg(0))
+
+PL_OUT		Which player in team has been dismissed
+	LIMITS	0	- No one dismissed
+		1 to 11	- Player number in batting team
+			(equal to CREASE(MAN_OUT-1))
+
+OLD_TEXT$	Last message to be shown in the Message Bar
+
+OVER		Number of completed overs
+		Updated when BALL is reset to zero (in _OVER_TERMINATE)
+	LIMITS	0 to OVERS
+
+OVERS		Number of overs per side for all matches in tournament
+		After allowing for restriction of overs (in options page)
+			ie may differ from OVERS(TRN) value
+
+PANEL_PORT	Which joystick port is being used by user controlling panel
+		ie PANEL_PORT=_PORT(PANEL_TEAM)
+	LIMITS	0 to 1
+
+PANEL_TEAM	Which team (0-1) is currently using panel
+		eg if PANEL_TEAM=INNS then batting team using panel
+	LIMITS	0 or 1
+
+_POINTSRATING	User's rating
+	LIMITS	0 to 100
+
+REACHED		Which chasers have reached their destination (as in MAN_DEST())
+	LIMITS	Binary Word (bits 1 to 11)
+		True <=> Chaser has reached
+
+REPLAY		True if and only if last match was drawn during knockout stage
+	LIMITS	True or False
+
+RUBY8FONT	Font - Ruby 8		Used in Team Comparison
+
+SBOWLER		Squad number of currently bowler
+	LIMITS	- 1 to 16 - Squad number in squad
+
+SCORE		Runs or extras scored during last ball
+
+SEASON		Number of current Season
+		Equals zero during INIT procedure
+		Increased every time _SEASON_SETUP procedure is called
+
+SHOT		Type of shot attempted by striker
+		Equals Amreg(12,8)
+		(See "Striker" Amal program (prog 12))
+
+SHOT_RESULT	Way in which ball leaves bat.
+	LIMITS	-	-1 - Edged ball
+			 0 - Did not make any contact with ball 
+		   1 to 10 - Cleanly hit. The higher the value, the harder hit
+
+SMALL		Font - Peridot 7
+
+SSTRIKER	Squad number of current striker
+	LIMITS	1 to 16
+
+STRIKER		Player number for man on strike
+	LIMITS	1 to 11
+
+STRIKER_HAND	Whether striker is right or left handed
+	LIMITS	See BAT_HAND(9)
+
+STRIKER_HOME	Which stumps are "owned" by the striker - used for running
+		If these stumps correspond to broken stumps in runout attempt
+		and striker is out of crease then stiker is runout
+		Striker starts by "owning" keeper stumps and switches stumps
+		each time batsmen cross while running
+	LIMITS	-	1 = Keeper/Striker stumps
+			2 = Bowler/Non-Striker stumps
+		
+STRIKER_IMAGE	The last image number of the striker - only used during bowler
+		run up. Used so that AMOS knows exactly when the bat hits the
+		ground so that the appropriate sample can be played.
+	LIMITS	-	220 - 222 (right hander) and 300 to 302 (left hander)
+
+STRIKER_NAME$	Short name of current striker
+
+STUMPING_CHANCE	True <=> still a chance that the striker can be stumped.
+		Set to false if any fielder other than keeper touches the ball
+		or batsmen have crossed (implying going for a run).
+		If "run-out" occurs and STUMPING_CHANCE=True Then Stumped.
+
+TEAMOUT		Team which failed to qualify for the World Cup
+		Updated in _TOURN_SETUP procedure
+	LIMITS	1 to 9
+	
+_TEXT		Font - Dpaint 8		For tournament,ground,weather info
+
+THROW_DISTANCE	Distance (in pixels) to THROW_STUMPS
+	LIMITS	0 to about 450 (on longest boundary)
+
+THROW_STUMPS	Stumps to which ball is (to be) thrown
+	LIMITS	1 - Keeper stumps
+		2 - Bowler stumps
+
+TIMESFONT	Font - Times 11		Mainly used in BBC style cards
+
+TIMING		Used to control timing of Synchro (once every 25th of a second)
+		Updated every time the Synchro command is accessed
+
+TRN		Number of current tournament
+	LIMITS	1 to 6
+
+_TOURNTEAMS	Binary Word holding whether team plays in current tournament
+		If Btst(Team,_TOURNTEAMS)
+			Playing=True
+		Else
+			Playing=False
+		End If
+
+UMPIRE		Which umpire made the last decision
+		(if dismissal then this umpire raises his finger)
+	LIMITS	0 - No umpire has made any decision so far for this ball
+		1 - Main umpire
+		2 - Square leg umpire
+
+USERTOURN	True if and only if user is playing in current tournament
+		Equals Btst(CH,_TOURNTEAMS)
+	LIMITS	True or False
+
+VSPEED		Current vertical speed of ball is "VSPEED pts per frame"
+		This is set equal to Amreg(22) directly after synchro and may
+		be modified in AMOS before the next synchro
+	LIMITS	-63 to 63
+
+WEATHERNOW	Number of weather for next match
+	LIMITS	0 to 5
+
+WEEK		Number of current week
+	LIMITS	1 to WEEKS(TRN,1)
+
+X_BALL		X coordinate of ball (in pts)
+	LIMITS	None.
+
+X_CONTACT	X coordinate of ball when striker makes contact
+		This is a predicted value before the striker hits it, but is
+		updated to the actual value once the striker hits the ball
+
+X_OFFSET	X position of top-left coordinate of visible part of main field
+		NOT updated as field is scrolled
+
+X_PITCH		X coordinate (in pts) of where ball will actually pitch
+		For computer bowling - calculated before bowler starts run up
+		For user bowling - calculated as ball leaves bowler
+
+X_PITCH_AIM	X coordinate (in pts) of where to aim to pitch ball (this is 8
+		times the coordinate of the "pitch selection" bob.
+
+X_PITCH_CROSS	X coordinate (in pts) of cross showing where bowler wants to
+		pitch delivery.
+		If computer is bowling, then this is calculated after the actual
+			pitch is calculated. It is where the batsman guesses the
+			ball will pitch. As the bowler runs up, the cross moves
+			to this position.
+		If user is bowling, then this is updated using the coords of the
+			cross when the bowler reaches the crease. ie final coord
+			of cross after user has moved it around.
+
+X_STOP		X position (in pts) of where ball either (whichever first):
+		1. Crosses boundary - if boundary is a six then X_STOP will be
+		along the line of the ball, outside the boundary by 32 pts.
+		(This is for the Wagon Wheel)
+		2. Where ball is (first) collected by a fielder
+
+YEAR		Number of current year
+	LIMITS	1 to 4
+
+Y_BALL		See X_BALL
+
+Y_OFFSET	See X_OFFSET
+
+Y_PITCH		See X_PITCH
+
+Y_PITCH_AIM	See X_PITCH_AIM
+
+Y_STOP		See X_STOP
+
+Z_BALL		See X_BALL
+
+Z_CONTACT	See X_CONTACT
+
+*******************************************************************************
+*********************************  A R R A Y S  *******************************
+*******************************************************************************
+AVBOWLONESORT(15)	(Player(0-15))
+			Player	- Player Number in Squad Minus 1
+				(before sorting)
+				- Player=0  corresponds to having best average
+				  Player=15 			  worst
+				(after sorting)
+	DESCRIPTION	- Holds bowling codes used in Averages page to sort
+			  bowlers in a single team into order of best average
+	CONTENTS	- 1000*(100*Average)+100*Team(1-9)+Player(1-16))
+				(if player has an average)
+			  1000*(100000+Runs+100*Team(1-9)+Player(1-16))
+				(if player has no average)
+
+AVBATONESORT(15)	(Player(0-15))
+			See AVBOWLONESORT(15)
+	DESCRIPTION	- Batting Codes for single team for Averages page
+	CONTENTS	- -(1000*(100*(Average+1000))+100*Team+Player)
+				(if player has an average)
+			  -(Runs+100*Team+Player)
+			  	(if player has no average)
+
+AVBOWLALLSORT(143)	(Global_Player(0-143))
+			Global_Player	- 16*(Team-1)+(Player-1)
+			See AVBOWLONESORT(143)
+	DESCRIPTION	- Bowling Codes for all 9 teams collectively
+
+AVBATALLSORT(143)	(Global_Player(0-143))
+			Global_Player	- 16*(Team-1)+(Player-1)
+			See AVBATONESORT(143)
+	DESCRIPTION	- Batting Codes for all 9 teams collectively
+
+BACKUP(2)		(Stumps(1-2))
+			Stumps	- 1 - Stumps at batsman's end
+				  2 - Stumps at bowlers end
+	DESCRIPTION	- Gives fielder designated to back up the Stumps
+	CONTENTS	- Fielder (1-11)
+
+BALLS(1)		(Team(0-1))
+			See TEAM(1)
+	DESCRIPTION	- Balls faced by team (excluding no balls)
+
+BASED(9)		(Team(1-9))
+			Team	- Team number
+	DESCRIPTION	- The country in which the Team will host the World Cup
+	CONTENTS	- Country (1-5)
+
+BAT_AGGRESS(16,9)	(Player(1-16),Team(1-9))
+			Player	- Player Number In Squad
+			Team	- Team Number
+	DESCRIPTION	- Aggressiveness while batting (affects scoring rate)
+	CONTENTS	- 1 (least) to 20 (most aggressive)
+
+BAT_FIGS(11,1,3)	(Player(0,1-11),Team(0-1),Statistic(0-3))
+			Player		- 0 - Team
+					 >0 - Player number in team
+			Team		- 0 - Team batting first
+					  1 - Team fielding first
+			Statistic	- 0 - Runs
+					  1 - Balls  (for Player>0)
+					  2 - Fours	"
+					  3 - Sixes	"
+	DESCRIPTION	- Extras scored by team for Player=0 (Statistic=0)
+			  Runs scored, balls faced, fours/sixes by each player
+
+BAT_HAND(9)		(Team(1-9))
+			Team	- Team number
+	DESCRIPTION	- The hand each player bats with
+	CONTENTS	- Binary Word (bits 1 to 16)
+			Btst(Player(1-16),BAT_HAND(Team(1-9)))=0 - Right handed
+							      =-1 - Left handed
+
+BAT_ORDER(11)		(Player(1-11))
+			Player	- Player number in order
+	DESCRIPTION	- Order in which players are scheduled to bat
+	CONTENTS	- Player number in team (1-11)
+
+BAT_SKILL(16,9)		(Player(1-16),Team(1-9))
+			Player	- Player number in squad
+			Team	- Team number
+	DESCRIPTION	- Batting skill rating
+	CONTENTS	- 1 (worst) to 20 (best)
+
+BAT_STATS(16,9,5,1)	(Player(1-16),Team(1-9),Statistic(0-5),Type(0-1))
+			Player		- number in squad
+			Team		- team number
+			Statistic	- 0 - Matches
+					  1 - Innings
+					  2 - Outs
+					  3 - Runs
+					  4 - Fifties
+					  5 - Highest Score (runs)
+					  6 - Highest Score (0=out, -1=not out)
+					  7 - Highest Score (opposition team)
+						(updated if score is greater
+						 OR equal to previous best)
+			Type		  0 - Career Statistics
+					  1 - Tournament Satistics
+	DESCRIPTION	- Batting stats for all players (tournament and career)
+
+BATTING(16,9,1)		(Player(1-16),Team(1-9),Type(0-1))
+			Player	- Player number in squad
+			Team	- Team number
+			Type	- 0 - Strength
+				  1 - Weakness
+	DESCRIPTION	- Batting strengths and weaknesses
+	CONTENTS	- Binary Word (bits 0 to 9)
+			Bit 0 - Leg side deliveries
+			    1 - Off side
+			    2 - Full length
+			    3 - Short pitched
+			    4 - In seamers/swingers / off spin
+			    5 - Away seamers/swingers / leg spin
+			    6 - Normal spin
+			    7 - Flighted spin bowling
+			    8 - Seam
+			    9 - Swing
+
+BOWL_ACCURACY(9,1)	(Team(1-9),Type(0-1))
+			Team	- Team number
+			Type	- 0 - Strength
+				  1 - Weakness
+	DESCRIPTION	- Accuracy of each bowler to pitch ball where intended
+	CONTENTS	- Binary Word (bits 1 to 16)
+		       ie If Btst(Player(1-16),BOWL_ACCURACY(Team(1-9),0))
+				Strength=True
+			  Else If Btst(Player(1-16),BOWL_ACCURACY(Team(1-9),1))
+			   	Weakness=True
+			  Else
+			   	Neither_Strength_Nor_Weakness=True
+			  End If
+
+BOWL_FIGS(11,1,5)	(Player(1-11),Team(0-1),Statistic(0-5))
+			Player		- Player number in team
+			Team		- 0 - Team batting first
+					  1 - Team batting second
+			Statistic	- 0 - Balls
+					  1 - Maidens
+					  2 - Runs
+					  3 - Wickets
+					  4 - Last over - runs
+					  5 - Last over - wickets
+	DESCRIPTION	- Bowling figures during a match
+
+BOWL_HAND(9)		(Team(1-9))
+			See BAT_HAND(9)
+	DESCRIPTION	- Hand used to bowl ball with 
+
+BOWL_MOVEMENT(9,1)	(Team(1-9),Type(0-1))
+			See BOWL_ACCURACY(9,1)
+	DESCRIPTION	- Movement of the ball
+
+BOWL_ORDER(11)		(Player(0,1-11))
+			Player	- 0 - Number of different bowlers bowled
+				 >0 - Player number
+	DESCRIPTION	- Order in which bowlers were chosen (order on card)
+	CONTENTS	- Player number in team (1-11)
+		
+BOWL_PATTERN(60)	(Over(0,1-50))
+			Over	- Over number
+			NOTE - Important to keep limit to 60 NOT 50
+	DESCRIPTION	- Holds which player will bowl the Over
+	CONTENTS	- 0 - No bowler decided
+			 >0 - Player number (1-11)
+
+BOWL_SKILL(16,9)	(Player(1-16),Team(1-9))
+			See BAT_SKILL(16,9)
+	DESCRIPTION	- Bowling skill rating (1 to 20)
+			- 0 - Not a regular bowler
+
+BOWL_SPEED(16,9)	(Player(1-16),Team(1-9))
+			Player	- Player number in squad
+			Team	- Team number
+	DESCRIPTION	- Speed of bowler
+	CONTENTS	- 0 - Not a regular bowler
+			  1 - Spin
+			  2 - Slow-Medium
+			  3 - Medium-Slow
+			  4 - Medium
+			  5 - Medium-Fast
+			  6 - Fast-Medium
+			  7 - Fast
+
+BOWL_STATS(16,9,7,1)	(Player(1-16),Team(1-9),Statistic(0-7),Type(0-1))
+			Player		- number in squad
+			Team		- team number
+			Statistic	- 0 - Balls
+					  1 - Maidens
+					  2 - Runs
+					  3 - Wickets
+					  4 - 5 Wicket Innings
+					  5 - Best Bowling (wickets)
+					  6 - Best Bowling (runs)
+					  7 - Best Bowling (opposition team)
+						(updated if someone equals
+						 old record)
+			Type		  0 - Career Statistics
+					  1 - Tournament Satistics
+	DESCRIPTION	- Bowling, fielding and keeping stats
+
+BOWL_TYPE(16,9)		(Player(1-16),Team(1-9))
+			Player	- Player number in squad
+			Team	- Team number
+	DESCRIPTION	- Type(s) of ball bowler normally bowls
+	CONTENTS	- Binary Word (bits 4 to 9)
+			  (See BATTING(16,9,1))
+
+BUILT_IN_PATTERN(50)	(Over(1-50))
+	DESCRIPTION	Gives a bowling pattern dependant on the max number
+			of overs each bowler can bowl
+			This is used to work out how computer bowls bowlers
+	CONTENTS	The nth set of 3 bits gives the "type" of bowler to
+			bowl for that over (in a match with 5*n-4<OVERS<5*n)
+			The "type" of bowler is as follows:
+			type:	1,2 - Opening bowlers (preferably fastish)
+				3,4 - the next 2 best bowlers (if one is a
+					spinner here, then make him number 4)
+				5   - the worst of the 5 bowlers
+	NOTE		If the 6th best bowler is not much worse than the 5th
+			best then he may bowl the first proportion (no more
+			than half) of the 5th bowlers overs				
+
+CLUB$(16,9)		(Player(1-16),Team(1-9))
+			Player	- Player number in squad
+			Team	- Team number
+	DESCRIPTION	- Club for which player plays for at home
+	CONTENTS	- 20 charcters max
+
+COMPARISON(50,1,1)	(Over(1-50),Team(0-1),Statistic(0-1))
+			Over		- Over number
+			Team		- 0 - first innings
+					  1 - second innings
+			Statistic	- 0 - Runs scored until stage occurs
+					  1 - Wickets gone  "	"	"
+	DESCRIPTION	- Holds team score for both innings at end of Over
+
+CREASE(1)		(Not_Out_Player(0-1))
+			Not_Out_Player - 0 - on strike
+					 1 - away from strike
+	DESCRIPTION	- Gives team number of the not out batsmen (at crease)
+	CONTENTS	- Player team number (1-11)
+
+EXTRAS(1)		(Team(0-1))
+			See TEAM(1)
+	DESCRIPTION	- Number of extras scored by team
+
+FALL(10)		(Wicket(1-10))
+			Wicket	- Wicket number
+	DESCRIPTION	- Team score when the wicket fell
+
+_FIELD$(15)		(Field(1-15))
+			Field	- Field number (1 to 5 are default fields)
+	DESCRIPTION	- Name of field
+	CONTENTS	- 19 characters max
+
+_FIELD_DEFAULT(16)	(Player(1-16))
+			Player	- Player number in squad
+	DESCRIPTION	- Default field for each player when they bowl
+	CONTENTS	- Field number (1-15)
+
+_FIELD_POS(15,11,1)	(Field(0,1-15),Fielder(0,1-11),Direction(0-1))
+			Field		- 0 - Current field
+					- 1 to  5 Field number (default fields)
+					- 6 to 15 Field number (user fields)
+			Player		-  0 -	Number of slips (inc. keeper)
+						when (direction=0)
+					- >0 -	Fielder number
+			Direction	- 0 - x direction
+					  1 - y direction
+	DESCRIPTION	- Position of each man on the field
+	CONTENTS	- 0 < x direction < 200  (as on Field Placings page)
+			  0 < y direction < 160		"	"
+
+_FIELD_STATS(16,9,1)	(Player(1-16),Team(1-9),Statistic(0-1))
+			Player		- Player number on squad
+			Team		- Team number
+			Statistic	- 0 - Catches
+					  1 - Stumpings
+	DESCRIPTION	- Catches and stumpings for player throughout career
+
+_FIELDING(16,9)		(Player(1-16),Team(1-9))
+			See BAT_SKILL(16,9)
+	DESCRIPTION	- Fielding skill rating (1 to 20)
+
+FITNESS(16,9)		(Player(1-16),Team(1-9))
+			See BAT_AGGRESS(16,9)
+	DESCRIPTION	- Fitness rating (0 to 20)
+
+_FORM(16,9)		(Player(1-16),Team(1-9))
+			See BAT_AGGRESS(16,9)
+	DESCRIPTION	- Form rating (1 to 20)
+
+_FORMAT(6)		(Tournament(1-6))
+			Tournament	- Tournament number
+	DESCRIPTION	- Tournament format - which matches are played
+	CONTENTS	- Binary Word (bits 1 to 31)
+			bits 1 to 28	- League stage matches
+			bit 29		- First Semi
+			bit 30		- Second Semi
+			bit 31		- Final
+			If Btst=True then that match is to be played
+
+GROUNDASSISTS(5,4)	(Country(1-5),Ground(1-4))
+			Country	- Country number
+			Ground	- Ground number
+	DESCRIPTION	- Gives the type(s) of bowling the wicket suits
+	CONTENTS	- Binary Word (bits 0 to 3)
+			See BOWL_TYPE(16,9)
+			If Btst=True then that type of bowling is suited
+			
+GROUPS(6)		(Tournament(1-6))
+			Tournament	- Tournament number
+	DESCRIPTION	- Gives the number of groups that the teams are split
+			  into during the league stage (usually 1, maybe 2)
+
+_HOMETEAMS(9,4)		(Position(1-9),Year(1-4))
+			Position	- Each position corresponds to a team
+			Year		- Year number
+	DESCRIPTION	- Holds whether a team will play in their usual tourn
+			  Array stays constant throughout game
+	CONTENTS	- 0 - Space for travelling team
+			 >0 = Team number(1-9)
+
+HOW_OUT(11,1,2)		(Player(1-11),Team(0-1),Part(0-2))
+			Player	- Player number in team
+			Team	- 0 - Team batting first
+				  1 - Team batting second
+			Part	- 0 - Type of dismissal
+				  1 - Bowled by
+				  2 - Caught/Stumped by
+	DESCRIPTION	- Details of how a player was dismissed
+			  Team is the team batting
+	CONTENTS	- Part=0 -	-1 = Has not gone into bat
+					 0 = Not out
+					 1 = Retired Hurt
+					 2 = Run out
+					 3 = Bowled
+					 4 = LBW
+					 5 = Caught & Bowled
+					 6 = Caught
+					 7 = Stumped
+			- Part=1 -	Player (1-11) on opposition who bowled
+			- Part=2 -	Player (1-11) who caught or stumped
+
+HOW_OUT$(11)		(Player(1-11))
+			Player	- Player number in team
+	DESCRIPTION	- The string used to describe the current status of a
+			  player (as defined in HOW_OUT) in the team currently
+			  batting.  This is exactly the format used in the
+			  Batting Scorecard and Batsman Innings card.  This is
+			  updated when HOW_OUT() is updated.  This array is
+			  primarily used to avoid string additions during
+			  Interface programs (which cause the weird characters
+			  bug - See Bugs.txt)
+			  Note - Only used in arcade game
+	CONTENTS	- The value on the LHS is that given by HOW_OUT(), the
+			  string on the RHS is that stored in HOW_OUT$():
+			  		-1 = ""
+			  		 0 - "not out"
+			  		 1 - "retired hurt"
+			  		 2 - "run out"
+			  		 3 - "b  [bowler name]"
+			  		 4 - "lbw    b  [bowler]"
+			  		 5 - "c & b  b  [bowler]"
+			  		 6 - "c  [catcher]    b  [bowler]"
+			  		 7 - "st  [catcher]    b  [bowler]"
+			  where [bowler] and [catcher] are short player names
+	
+_INTFIXT(9,4)		(Position(1-9),Year(1-4))
+			See _HOMETEAMS(9,4)
+	DESCRIPTION	- Same as _HOMETEAMS(9,4) but includes travelling teams
+			  Changes each season
+	CONTENTS	- Team number(1-9)
+
+_INTRESULTS(9,6)	(Position(0-9),Tournament(1-6))
+			Position	- 0 - Did user play in tournament?
+					 >0 - Position in tournament (1=first)
+	DESCRIPTION	- Final position of teams in tournament
+	CONTENTS	-  Tournament	Position	Result
+			     1 to 6	   0		USERTOURN
+			     1 to 6	   1		Champions
+				1	 1 to 5		Position in table
+				2	   2		Final loser
+					   3		First Semi losers
+					   4		Second Semilosers
+				3	   2		Runners up
+				4	   2		Final loser
+					   3		Bottom in table
+				5	   2		Final Loser
+					   3		First Semi loser
+					   4		Second Semi loser
+					   5		Bottom in group 1
+					   6		Bottom in group 2
+				6	   2		Final loser
+					   3		First Semi loser
+					   4		Second Semi loser
+					 5 to 8		Position in table
+
+_INTTOURN(3,4)		(Position(1-3),Year(1-4))
+			Position	- 1 - First tournament
+					  2 - Second
+					  3 - Third
+			Year		- Year number
+	DESCRIPTION	- Holds which tournaments are played each year and in
+			  which order
+			  Constant throughout game
+	CONTENTS	- Tournament number (1-6)
+			  If Tournament = 0 Then no tournament to be played
+
+KEEPER(1)		(Team 0-1)
+			See TEAM(1)
+	DESCRIPTION	- Which player in team is the keeper
+	CONTENTS	- Team number (1-11)
+
+LEAGUE(6,28,1)		(Tournament(1-6),Match(0-28),Team(0 to 1))
+			Tournament	- Tournament number
+			Match		- League match number
+			Team		- 0 - Team on LHS of fixture page
+					      (team which chooses heads/tails)
+					  1 - Opposition (Team on RHS of page)
+	DESCRIPTION	- League format of each tournament
+	CONTENTS	- Match = 0 => Number of league matches in tournament
+				> 0 => RESULT = Position number (1-9) as used
+						in _INTFIXT(9,4)
+				eg for two teams in Match in Tournament in Year
+				_INTFIXT(LEAGUE(Tournament,Match,(0/1)),Year)
+
+MAN_ANGLE#(11)		(Fielder(1-11))
+	DESCRIPTION	- Angle of ball from fielder
+			- Not always up to date - so assume not up to date
+			- However, it is up to date when fielders are reset
+			-   at the beginning of each ball
+	CONTENTS	- 0 to 2Pi
+
+MAN_DEST(11,1)		(Fielder(1-11),Direction(0-1))
+	DESCRIPTION	- Coordinates of where fielder should face (and maybe
+			run to)
+	CONTENTS	- MAN_DEST(Fielder,0)=65536 implies destination is ball
+
+MAN_DISTANCE_SQ(11)	(Fielder(1-11))
+	DESCRIPTION	- Distance squared of fielder from ball
+			If the fielder is not being tested for this, then the
+			value will be 10000000
+	CONTENTS	- 0 to 10000000 pixels squared
+
+NAME$(16,9,1)		(Player(0,1-16),Team(1-9),Type(0-1))
+			Player 	- 0 	- Team name
+				  1-16	- Player name
+			Team	- Team number
+			Type	- 0 - Full name (includes initials for players)
+				  1 - Abbreviated name
+	DESCRIPTION	- Team and player names
+	CONTENTS	- Team name -	12 characters max (type = 0)
+					 4 characters max (type = 1) (incl ".")
+			  Players   -	24 characters max (type = 0)
+			  		11 characters max (type = 1)
+
+OPTIONS(6)		(Option(1-6))
+			Option	- Option number
+				- 1 - Difficulty
+				  2 - Number of overs
+				  3 - Arcade interactivity
+				  4 - Music
+				  5 - Commentary style
+				  6 - Game Speed
+	DESCRIPTION	- Setting for different options
+	CONTENTS	- Option	RESULT=1	RESULT=2       RESULT=3
+			    1		Easy		Moderate	Diffclt
+			    2		Maximum		Default		Reduced
+			    3		Full		Restricted	None
+			    4		Modern		Easy-Going	Off
+			    5		American	English		Humour
+			    6		Fast		Medium		Slow
+
+OVERS(6)		(Tournament(1-6))
+			Tournament	- Tournament number
+	DESCRIPTION	- Number of overs (per side) in a match for tournament
+			Does not take into account option of reducing or
+			increasing number of overs (in options page)
+
+PARTITION(4,4)		(Position(1-4),Year(1-4))
+			Position	- Postion number of tournament
+			Year		- Year number
+	DESCRIPTION	- Define where tournaments grab teams from the list
+			  of 9 teams in _INTFIXT(9,4)
+	CONTENTS	- Position
+			     1	Start of first tournament
+			     2	Start of second =End of first tournament PLUS 1
+			     3	Start of third = End of second PLUS 1
+			     4	End of third PLUS 1
+
+_PORT(1)		(Team(0-1))
+			See TEAM(1)
+	DESCRIPTION	- Which joystick used by each team
+	CONTENTS	- Port Number (0-1) or -1 for computer controlled
+			  (0 player game - may never exist!)
+			  		_PORT(0)=-1
+			  		_PORT(1)=-1
+			  (1 player game - User batting first)
+					_PORT(0)=1
+					_PORT(1)=-1
+			  (1 player game - User fielding first)
+					_PORT(0)=-1
+					_PORT(1)=1
+			  (2 player game)
+			  		_PORT(0)=0 (team batting first)
+			  		_PORT(1)=1
+			So in one player games, user controls normal joystick
+			  		  
+QUAL(16,9,4)		(Player(1-16),Team(1-9),Type(1-4))
+			Player	- Player number in squad
+			Team	- Team number
+			Type	- 0 - Type of Player
+				  1 - Batting Strength
+				  2 - Batting Weakness
+				  3 - Bowling Strength
+				  4 - Bowling Weakness
+			    or for wicket keepers
+			    	  3 - Keeping Strength
+			    	  4 - Keeping Weakness
+	DESCRIPTION	- Player type, strengths and weaknesses
+			Constant throughout game
+	CONTENTS	- Type=0	RESULT-	0 - Opening Batsman
+						1 - Top Order Batsman
+						2 - Middle Order Batsman
+						3 - Wicket Keeper
+						4 - All Rounder
+						5 - Bowler
+
+			- Type>0	RESULT-	See Resource Bank
+					Resource$(QUAL(Player,Team,Type)+100)
+
+RESULT(31)		(Match(1-31))
+			Match	- Match number
+	DESCRIPTION	- Holds the result to all matches
+	CONTENTS	- 0 - Win for team 0 (as in _TOURNFIXT(31,1))
+			  1 - Match Drawn
+			  2 - Loss for team 0
+
+RESULTLINE$(2)		(Line(0-2))
+			Line	- Line number (corresponds to (Match+1) mod 3)
+	DESCRIPTION	- Results of last 3 games (used in tournament page)
+
+RISK(1)			(Team(0-1))
+			See TEAM(1)
+	DESCRIPTION	- Percentage risk taken by team
+	CONTENTS	- 0 to 100
+
+SEEDING(9)		(Team(1-9))
+			Team	- Team number
+	DESCRIPTION	- World Rating of team based on position in int. table
+			  updated seasonally
+	CONTENTS	- 1(best team) to 9(worst team)
+
+SELECTED(9)		(Team(1-9))
+			Team	- Team number
+	DESCRIPTION	- Players in squad which are selected for team
+	CONTENTS	- Binary Word
+			If Btst(Player(1-16),SELECTED(Team(1-9)))
+				Selected=True
+			Else
+				Selected=False
+			End If
+
+SPECS(9,2)		(Team(1-9),Type(0-2))
+			Team	- Team number
+			Type	- 0 - Captain
+				  1 - First choice keeper in squad
+				  2 - Player selected as keeper for team
+	DESCRIPTION	- Holds the specialist players in team
+			(reserve keeper is always player 16 in squad)
+	CONTENTS	- Number of player in squad (1 to 16)
+
+SQUAD(11,9)		(Player(1-11),Team(1-9))
+			Player	- Player number in team
+			Team	- Team number
+	DESCRIPTION	- Gives squad numbers of the team players
+	CONTENTS	- Player number in squad (1-16)
+
+TABLE(6)		(Tournament(1-6))
+			Tournament	- Tournament number
+	DESCRIPTION	- Is there a table to be shown in tournament?
+			  If so then how many TARGET positions are there?
+		NOTE	- If a team reaches a target position in the table
+			  then it will go through to the next round or become
+			  champions (depending on the tournament)
+	CONTENTS	- 0 - No table used in tournament
+			 >0 - Number of target places (per group)
+
+TABLEHEIGHT(6)		(Tournament(1-6))
+			Tournament	- Tournament number
+	DESCRIPTION	- Height of table in pixels
+
+TABLESORT(8)		(Position(0-8))
+			Position	- Corresponds to a team
+	DESCRIPTION	- Holds table codes used for sorting both international
+			  and tournament tables
+	CONTENTS	- Too complicated to show
+			  Best team is in position=0 
+
+TEAM(1)			(Team(0-1))
+			Team	- 0 - Team batting first
+				  1 - Team fielding first
+	DESCRIPTION	- Gives team number (1-9) of the 2 teams playing match
+
+TEAM_COLOURS(9,3)	- (Team(1-9),Type(0-3))
+			Type	- 0 - Skin colour
+				  1 - Hair colour
+				  2 - Pyjama colour 1 (shoulders and arms)
+				  3 - Pyjama colour 2 (lower two thirds)
+
+TEAMNUM(11)		(Fielder(1-11))
+			Fielder	-	 1 - Keeper
+				   2 to 10 - Normal fielder
+				  	11 - Bowler
+	DESCRIPTION	- Gives the team number (1-11) of each fielder
+			  (For the current fielding team.)
+			  (Initially, fielder numbers and player numbers are
+			  equal, except keeper is swapped with first man.)
+	CONTENTS	- Number of player in team (1-11)
+
+TEAMRECORDS(9,5,2)	(Team(1-9),Stat(0-5),Type(0-2))
+			Team	- Team number
+			Stat	- 0 - Matches
+				  1 - Wins
+				  2 - Draws
+				  3 - Losses
+				  4 - Balls faced
+				  5 - Runs scored
+			Type	- 0 - All time records
+				  1 - Tournament records
+				  2 - Seasonal records
+	DESCRIPTION	- Team records shown in tables
+
+_TOTAL(1)		(Team(0-1))
+			See TEAM(1)
+	DESCRIPTION	- Team total in match
+
+_TOURNFIXT(31,1)	(Match(1-31),Team(0-1))
+			Match	- Match number
+				- 0 to 28 League matches
+				 29 to 30 Semis
+				 31	  Final
+			Team	- See LEAGUE(6,28,1)
+	DESCRIPTION	- Holds which teams play in each match
+
+_TOURNHIST$(6,5)	(Tournament(0,1-6),Stat(0-5))
+			Tournament	- 0 - Current tournament
+					 >0 - Tournament number
+			Stat		- 0 - Holders
+					  1 - Highest Team Total
+					  2 - Lowest Team Total
+					  3 - Highest Score
+					  4 - Best Bowling (wickets)
+					  5 - Best Bowling (runs/player)
+	DESCRIPTION	- Tournament records
+			Updated after every match
+
+TRAVTEAMS(9,4)		(Position(0,1-9),Year(1-4))
+			Position	- 0 - Number of travelling teams
+					 >0 - Corresponds to certain teams
+			Year	- Year number
+	DESCRIPTION	- Teams that could be playing in any tournament
+	CONTENTS	- Team number (1-9)
+			  Travelling teams are placed in positions
+			  1 to TRAVTEAMS(0,4)
+
+USER(1)			(Team(0-1))
+			See TEAM(1)
+	DESCRIPTION	Is the user playing for team
+	CONTENTS	If USER(Team(0-1))
+				User_has_control=True
+			Else
+				Computer_has_control=True
+			End If
+			If USER(0) and USER(1)
+				2_player_game=True
+			Else If USER(0)=False and USER(1)=False
+				computer_controlled_game=True
+			Else
+				1_player_game=True
+			End If
+
+USERFIGS(9,1)		(Team(1-9),Stat(0-1))
+			Team	- Team number
+			Stat	- 0 - Matches
+				  1 - Wins
+	DESCRIPTION	- User records against Team
+	CONTENTS	- eg USERFIGS(1,0)=Matches played against Team 1
+			     USERFIGS(1,1)=Wins against Team 1
+
+VENUE(31,4)		(Match(1-31),Year(1-4))
+			Match	- See _TOURNFIXT(31,1)
+			Year	- Year number
+	DESCRIPTION	- Which gound each match is to be played
+			  Updated seasonally
+	CONTENTS	- Ground number (1-4)
+
+WEATHERASSISTS(5)	(Weather(0-5))
+			Weather	- Weather number
+	DESCRIPTION	- Gives the type(s) of bowling the weather suits
+	CONTENTS	- See GROUNDASSISTS(5,4)
+
+WEEKS(6,1)		(Tournament(1-6),Type(0-1))
+			Tournament	- Tournament number
+			Type		- 0 - Number of weeks in tournament
+					  1 - Number of matches per week
+	DESCRIPTION	- Number of weeks and matches per week in tournament
+
+WICKETS(1)		(Team(0-1))
+			See TEAM(1)
+	DESCRIPTION	- Number of wickets fallen in innings for Team
+
+WORLDLOCATION(9,1)	(Team(1-9),Direction(0-1))
+			Team		- Team number
+			Direction	- 0 - x direction
+					  1 - y direction
+	DESCRIPTION	- Position of each team on world map
+	CONTENTS	- in pixels
+
+*******************************************************************************
+*******************************  G E N E R A L  *******************************
+*******************************************************************************
+
+FORMAT FOR TOURNAMENTS
+----------------------
+	See	HOMETEAMS(9,4),PARTITION(4,4),TRAVTEAMS(9,4),_INTTOURN(3,4)
+					T	E	A	M	S
+		Position	Year 1		Year 2		Year 3
+
+		   1		  2 Founders	  0 Shah Cup	  1 Carribean
+		   2		  0	"	  0	"	  8	"
+		   3		  6 Currey Cup	  0	"	  0	"
+		   4		  7	"	  3	"	  0	"
+		   5		  9	"	  5	"	  0	"
+		   6		  0	"	  7	"	  6 Currey
+		   7		  1 Pacific	  1 Pacific	  7	"
+		   8		  4	"	  4	"	  9	"
+		   9		  0	"	  0	"	  0	"
+
+	Travelling Teams	3,5,8		6,8,9,2		2,3,4,5
+
+	NOTE: Year 4 is reserved for the World Cup where the top 8 teams in
+		the international table at the end of year 3 compete.
+		The hosts are the top team in the table
+		
+			Tournament Number	Tournament Name
+
+				1		Carribean League
+				2		Currey Cup
+				3		Founder's Series
+				4		Pacific Challenge
+				5		Shah Cup
+				6		World Cup
+
+CLOTHING/HAIR/SKIN COLOURS
+--------------------------
+
+KEY -	l=light,b=bright,d=dark,p=pale
+All codes are RGB Hex codes
+
+		| Skin		Hair		Top Colour	Bottom Colour	
+-------------------------------------------------------------------------------
+Fielder Index	|  8		 9		10		11
+Batsmen Index	| 12		13		14		15
+-------------------------------------------------------------------------------
+Australia	| F72 (pink)	950 (sandy)	0B5 (b green)	FF0 (b yellow)
+England		| F72 (pink)	520 (d brown)	25B (blue)	59E (l blue)
+India		| 720 (brown)	000 (black)	59E (l blue)	25B (blue)
+New Zealand	| F72 (pink)	720 (brown)	444 (d grey)	AAA (l grey)
+Pakistan	| 720 (brown)	000 (black)	25B (blue)	0C5 (b green)
+South Africa	| F72 (pink)	720 (brown)	FF0 (b yellow)	0B4 (b green)
+Sri Lanka	| 720 (brown)	000 (black)	008 (d blue)	25B (blue)
+West Indies	| 720 (brown)	000 (black)	333 (d grey)	A00 (d red)
+Zimbabwe	| F72 (pink)	520 (d brown)	A00 (d red)	E00 (b red)
+
+
+BUILT-IN BOWLING PATTERNS
+-------------------------
+Format:
+over numbers go-1357... (first end)
+		2468... (second end)
+1,2,3,4,5 are the 5 selected bowlers
+where 1,2 are the openers and 4 usually a spinner (if one exists)
+
+50 Overs
+1111114444441111444455555
+2222233333555553333322222
+45 Overs
+11111444441111444455555
+22

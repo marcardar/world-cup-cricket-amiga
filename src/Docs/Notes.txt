@@ -1,0 +1,71 @@
+*******************************************************************************
+*********                                                            **********
+*********              W O R L D   C U P   C R I C K E T             **********
+*********                                                            **********
+*********                         An M.C. Production  (28/07/1996)   **********
+*********                                                            **********
+*********         WCC Programming Notes                              **********
+*********                                                            **********
+*******************************************************************************
+
+Things To Remember While Compiling
+----------------------------------
+Dont use squash - seems to be incredibly memory hungry - badly bugged
+
+Also see Bugs.txt
+
+Speed Tips
+----------
+1. When using the same amreg register more than once (in AMOS not AMAL) first
+   put the register into an AMOS variable and then use that (these are faster)
+2. "<" and ">" are faster than "<=" and ">=" respectively
+
+How To Create a PowerPacked Executable
+--------------------------------------
+1. Load up PowerPacker
+2. Make sure Command File is selected in the Prefs menu
+3. Select Process & Crunch from Hunklab menu
+4. Select Save from the Project menu - to save the self decompressing exec
+
+How To Test For Write Protected Disk
+------------------------------------
+Poke $BFD100,%10000   :Rem %1000 for DF1:
+A=Btst(3,$BFE001)
+If A=-1 Then "Enabled"
+If A=0  Then "Protected"
+
+Miscellaneous
+-------------
+1. Use the Cls c,x1,y1 to x2,y2 command to clear a part of the screen
+2. Search for "Vdialog$(" because ALL these resource variables MUST be
+   assigned using the _ASSIGN_STRING procedure
+3. Make sure that "Value" in Btst(Bit,Value) is not an expression
+4. Make sure that when calling a procedure, do not follow it by a colon
+   (eg when putting two commands on one line)
+   (If _PLAY is a procedure then this will work
+   	"_PLAY :"
+    but this will not work
+    	"_PLAY:"
+    because AMOS reads this as a "Label")
+   Best not to put anything after calling a procedure on the same line
+   Not even a Rem statement!
+
+Results of Compiles
+===================
+18/09/95
+--------
+Amos Info: Name=Combined_01.Amos, Size=515,648
+
+This was temporarily put together from WCC_26.Amos and WCC_Main_06.Amos
+This was the first time the complete program had been put together!
+All banks/data/pics were included in the executable (no samples yet!)
+
+Executable Size: 498,172
+Compressed Size: 242,420
+
+Max Chip Mem Used: 550K
+Max Fast Mem Used: 791K
+
+Crashed when striker played a shot because I forgot to turn off the speach
+telling how good the shot was! - no narrator.library available :-(
+

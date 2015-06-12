@@ -1,0 +1,12 @@
+Procedure for deciding whether shot COULD make contact
+Shadows for left handers
+I think I saw a fielder run to gather ball outside boundary...
+Make Risk setting have more of an effect (eg risking an extra run (when computer batting))
+Make sure player skills, left handed etc are correct/updated
+Finish off batting strokes
+
+Improvements:
+Commentary
+Backing up
+Fielding
+Samples handling

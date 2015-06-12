@@ -1,0 +1,107 @@
+*******************************************************************************
+*********                                                            **********
+*********              W O R L D   C U P   C R I C K E T             **********
+*********                                                            **********
+*********                         An M.C. Production  (02/02/1997)   **********
+*********                                                            **********
+*********         Banks & Bank Details                               **********
+*********                                                            **********
+*******************************************************************************
+
+Bank  1 - Sprites
+-----------------
+001 - Blank image - used to hide the ball
+002 - Ball shadow
+003 - Ball
+004 - Cross (used for pitch of delivery)
+005 - Blank
+006 - Risk setting bar
+007 - Fielder cross (used in field placings)
+008 - Keeper cross  (used in field placings)
+009 - Image to blank out old cross used in field placings
+
+020 to 024 - Planes (used in World Map). 020 points north, 024 points east
+
+040 to 043 - Stumps. 040 is normal position. 041 - 043 for breaking stumps
+
+050 to 053 - Square Leg Umpire. 050 normal position. 051 dimissed.
+	     052 - 050 - 053 - 050 etc for shaking head
+
+
+
+Bank  2 - Icons
+---------------
+
+
+Bank  3 - Music
+---------------
+(NOT DONE YET!)
+
+
+Bank  4 - AMAL
+--------------
+See AMAL.txt
+
+Bank  5 - Samples
+-----------------
+Sample 01 - Roar (Crowd)
+Sample 02 - Clapping (Crowd)
+Sample 03 - Hubbub (Crowd)
+Sample 04 - Almost/Aahh (Crowd)
+Sample 05 - Oooh (Crowd)
+Sample 06 - Crescendo (Crowd)
+Sample 07 - Howzat! (Fielders)
+Sample 08 - Catch It! (Fielders)
+Sample 09 - Bat to Ball (Striker)
+Sample 10 - Pad to Ball (Striker)
+Sample 11 - Bat to Ground (Striker)
+
+
+Bank  6 - Resource (Serious Section)
+------------------------------------
+
+
+Bank  7 - Resource (Serious Section)
+------------------------------------
+
+
+Bank  8 - Resource (Arcade Section)
+-----------------------------------
+
+
+Bank  9 - Resource (Arcade Section)
+-----------------------------------
+
+
+Bank 10 - World Map
+-------------------
+
+
+Bank 11 - West Indies Map
+-------------------------
+
+
+Bank 12 - Southern Africa Map
+-----------------------------
+
+
+Bank 13 - England Map
+---------------------
+
+
+Bank 14 - Australia Map
+-----------------------
+
+
+Bank 15 - India Map
+-------------------
+
+
+Bank 20 - Field Picture
+-----------------------
+
+
+Bank 21 - Program Data
+----------------------
+
+

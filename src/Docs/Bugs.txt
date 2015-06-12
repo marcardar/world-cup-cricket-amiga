@@ -1,0 +1,139 @@
+*******************************************************************************
+*********                                                            **********
+*********              A M O S   P R O F E S S I O N A L             **********
+*********                                                            **********
+*********                         An M.C. Production  (13/04/1997)   **********
+*********                                                            **********
+*********         Bugs occuring in Interpreter and Compiler          **********
+*********                                                            **********
+*******************************************************************************
+
+(The dates given are when the errors were discovered)
+
+??/??/94
+Seems to be a problem with using interface programs in resource bank when
+using bank 20.
+
+??/??/94
+Can click on hidden buttons (COMPILER ONLY)
+
+??/??/94
+"Val" does not recognise negative floating point numbers (COMPILER ONLY)
+	e.g.	'A#=Val("-1.2"):Print A#'	gives '1.2'
+
+??/07/95
+Does not like floating pts inside min or max (even if they are wrapped inside
+a function like "Int") (COMPILER ONLY)
+	e.g.	'Print Min(Int(Sqr(360)),1)'	does not work
+
+26/07/95
+Occasionally, seems to be a problem for using "Not" with arrays (COMPILER ONLY)
+(Try and avoid using "Not" - in some circumstances gives funny results)
+
+07/08/95
+After combining the match and arcade sections, I found that the cards were only
+being displayed alternately - ie every other one was invisible.  Bob 0 remained
+undefined after the Bob 0,?,?,? command on alternate attempts. (The image
+for the bob was definitely in the bank). I rectified this by repeating the
+Bob 0 command directly afterwards (so that definitely one of them would work).
+
+17/07/96
+Finally think I have discovered when the random characters (instead of the
+assigned string) appear in the resource programs.  The way I used to get round
+this was to try to reassign the resource variable again and again until the
+correct string was recognised. For example:
+For TRY=1 to 10
+	Vdialog$(1,1)=NAME$(1,1)
+	If Vdialog$(1,1)=NAME$(1,1) Then Exit
+Next TRY
+However, this is messy and does not always work (we can increase the number of
+tries but this is slow - an indefinte number of goes could lead to a never
+ending loop!  I used this method in any resource program where the error
+occured.
+
+Recently, I noticed that the weird characters were like a section of the array
+being used (eg instead of
+	"G.A.Gooch"
+we might get
+	"M.A.Taylor***G.A.Gooch***Aamir Sohail***..."
+or whatever the first players in each team might be.  I then looked back at
+all the places where I used the above method and lo and behold they allinvolved
+the assigning of strings in ARRAYS to resource variables.  So my solution was
+to create a procedure called _ASSIGN_STRING which takes anystring (which may be
+in an array) reads it in as a normal AMOS string variable parameter and then
+stores it in the appropriate resource variable.  For consistency, every
+resource STRING variable is assigned this way (not just those which involve
+arrays).  I haven't tested this yet but it looks good!
+
+20/07/96
+Oh dear, the above bug (weird characters in resource progs) occured.  So, now
+I'm going to combine the above idea with my earlier idea of trying to reassign
+the string to the register again and again until its correct. (fingers crossed)
+
+27/07/96
+Oh dear, oh dear, the bug occured again (several times) after using the above
+combined method. Now I'm going to try to copy string to a new string each TRY
+(ie
+Procedure _ASSIGN_STRING[_CHANNEL,REGISTER,_TEXT$]
+For TRY=1 to 10
+	NEW_TEXT$=_TEXT$:Rem New Line
+	Vdialog$(_CHANNEL,REGISTER)=NEW_TEXT$: Rem slightly modified
+	Exit If Vdialog$(_CHANNEL,REGISTER)=_TEXT$
+Next TRY
+
+02/08/96
+Right then, now I've defintely (99% sure of this one, ok?) found out why the
+weird characters are appearing.  I ripped the Batting Scorecard from the code
+and tested it time and time again in its own mini-program (something I should
+have done ages ago).  I soon found out that the culprit _HOW_OUT_STRING
+procedure was to blame and, more specifically, when (non-empty) strings were
+being added together.  Certainly, whenever these string additions were not
+included, the bug did NOT occur.  I do not know yet whether it is a combination
+of this with something else that is causing the bug.  I shall try and write a
+routine which demonstrates this bug in the most basic way (when I have more
+time).  ALL the other interface progs which suffered from the bug included some
+string additions (can't be bothered to check whether all those with no problems
+did not have any string additions).  The tactic therefore is to do any string
+additions before the channel is openned.
+
+02/08/96
+Wrote a program to demonstrate the above bug.  Its called "InterfaceBug.Amos".
+I think I've got it down to its (more or less) simplest form.  However, it does
+not involve string additions!  Instead, there is a loop which assigns ten
+registers with strings which are of random length (from 1 to 20 chars):
+[The dialog program simply displays strings 1VA to 10VA]
+For A=1 To 10
+	DUMMY$=Left$("12345678901234567890,Rnd(19)+1)
+	Vdialog$(1,A)=DUMMY$
+Next A
+The bug does not occur if we don't use the DUMMY$ intermediate variable.
+
+Summary: We should avoid assigning any strings other than Vdialog$() after we
+	 have opended the Dialog channel.
+
+26/08/96
+Must put a Wait Vbl before every "Paint" command, else we get "crap" flickering
+on the screen.  Just try the program:
+
+Ink 7: Plot 0,0: For A=0 To 100: Paint 0,0: Next A
+
+Note -	the "crap" looks like a vertical rectangle about 16 to 32 pixels wide, 
+	stretching from about a fifth of the distance from the top of the
+	monitor to a ?fifth? from the bottom.  It is completely independent
+	of the screens below it.
+
+	
+***************************  A M A L   B U G S  *******************************
+??/??/95
+Labal "Z" does not appear to work
+
+??/??/95
+When testing in form
+			LHS OP RHS,	where OP is '<','>','&'
+RHS must be in simplest form
+	e.g.	R4+R5<R6+R7	will not work
+
+??/07/95
+It appears that		R1<1|R2>2	does not work
+		but	R2>2|R1<1	does work
+
